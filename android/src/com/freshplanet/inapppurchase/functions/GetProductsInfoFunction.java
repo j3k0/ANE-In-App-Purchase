@@ -45,12 +45,12 @@ public class GetProductsInfoFunction extends BaseFunction
     			Extension.log("Query inventory successful");
     			
     			String data = inventory != null ? inventory.toString() : "";
-    	        Extension.context.dispatchStatusEventAsync("PRODUCT_INFO_RECEIVED", data) ;
+    	        Extension.context.dispatchStatusEventAsync("PRODUCTS_LOADED", data) ;
     		}
     		else
     		{
     			Extension.log("Failed to query inventory: " + result.getMessage());
-    			Extension.context.dispatchStatusEventAsync("PRODUCT_INFO_ERROR", "ERROR");
+    			Extension.context.dispatchStatusEventAsync("PRODUCTS_LOAD_ERROR", "ERROR");
     		}
         }
     };

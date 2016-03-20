@@ -91,18 +91,13 @@ void *AirInAppRefToSelf;
     }
     
     [dictionary setObject:productElement forKey:@"details"];
-    
-    
     NSString* jsonDictionary = [dictionary JSONString];
-    
-    FREDispatchStatusEventAsync(AirInAppCtx ,(uint8_t*) "PRODUCT_INFO_RECEIVED", (uint8_t*) [jsonDictionary UTF8String] );
+    FREDispatchStatusEventAsync(AirInAppCtx ,(uint8_t*) "PRODUCTS_LOADED", (uint8_t*) [jsonDictionary UTF8String] );
     
     if ([response invalidProductIdentifiers] != nil && [[response invalidProductIdentifiers] count] > 0)
     {
         NSString* jsonArray = [[response invalidProductIdentifiers] JSONString];
-        
-        FREDispatchStatusEventAsync(AirInAppCtx ,(uint8_t*) "PRODUCT_INFO_ERROR", (uint8_t*) [jsonArray UTF8String] );
-        
+        FREDispatchStatusEventAsync(AirInAppCtx ,(uint8_t*) "PRODUCTS_LOAD_ERROR", (uint8_t*) [jsonArray UTF8String] );
     }
 }
 
@@ -133,11 +128,13 @@ void *AirInAppRefToSelf;
     data = [[NSMutableDictionary alloc] init];
     [data setValue:[[transaction payment] productIdentifier] forKey:@"productId"];
     
-    NSString* receiptString = [[[NSString alloc] initWithData:transaction.transactionReceipt encoding:NSUTF8StringEncoding] autorelease];
+    // "transaction.transactionReceipt" is deprecated.
+    NSData *receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
+    NSString* receiptString = [[[NSString alloc] initWithData:receipt encoding:NSUTF8StringEncoding] autorelease];
     [data setValue:receiptString forKey:@"receipt"];
     [data setValue:@"AppStore"   forKey:@"receiptType"];
     
-    FREDispatchStatusEventAsync(AirInAppCtx, (uint8_t*)"PURCHASE_SUCCESSFUL", (uint8_t*)[[data JSONString] UTF8String]); 
+    FREDispatchStatusEventAsync(AirInAppCtx, (uint8_t*)"PURCHASE_APPROVED", (uint8_t*)[[data JSONString] UTF8String]); 
 }
 
 // transaction failed, remove the transaction from the queue.
@@ -374,7 +371,6 @@ DEFINE_ANE_FUNCTION(removePurchaseFromQueue)
 
         if ([transaction transactionState] == SKPaymentTransactionStatePurchased && [[[transaction payment] productIdentifier] isEqualToString:productIdentifier])
         {
-            // conclude the transaction
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
             FREDispatchStatusEventAsync(context, (uint8_t*) "DEBUG", (uint8_t*) [@"Conluding transaction" UTF8String]);
             break;

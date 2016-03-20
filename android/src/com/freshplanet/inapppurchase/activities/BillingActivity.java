@@ -150,7 +150,7 @@ public class BillingActivity extends Activity implements IabHelper.OnIabPurchase
             	resultObject.put("productId", purchase.getSku());
             	resultObject.put("receipt", receiptObject);
             	resultObject.put("receiptType", "GooglePlay");
-            	Extension.context.dispatchStatusEventAsync("PURCHASE_SUCCESSFUL", resultObject.toString());
+            	Extension.context.dispatchStatusEventAsync("PURCHASE_APPROVED", resultObject.toString());
             }
             catch (JSONException e)
             {
