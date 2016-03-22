@@ -24,11 +24,16 @@ package com.freshplanet.ane.AirInAppPurchase
     import flash.system.Capabilities;
     import com.freshplanet.ane.AirInAppPurchase.events.*;
 
+    /** AirInAppPurchase's main class */
     public class InAppPurchase extends EventDispatcher
     {
         private static var _instance:InAppPurchase;
 
+        /** Whether to display debug on the console or not */
         public var debug:Boolean = true;
+
+        /** @private
+         * Log stuff to the console */
         internal function log(...args):void {
             if (debug) {
                 args.unshift('[AirInAppPurchase] ');
@@ -36,15 +41,29 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
         
+        /** ANE's ExtensionContext */
         private var extCtx:*;
 
-        // Convenient access to the InAppPurchaseProducts
+        /** Loaded InAppPurchaseProducts */
         private var _products:InAppPurchaseProducts = new InAppPurchaseProducts();
-        public function get products():InAppPurchaseProducts { return _products; }
 
-        // Pending transactions
+        /** Pending transactions */
         private var _pendingReceipts:Vector.<InAppPurchaseReceipt> = new Vector.<InAppPurchaseReceipt>();
+
+        /** The loaded InAppPurchaseProducts.
+        *
+        * The ANE maintains a map <code>productIdentifier</code> ⇒ <code>InAppPurchaseProduct</code>.
+        * 
+        * This map is filled when <code>PRODUCTS_LOADED</code> is triggered (it's empty before that).
+        * 
+        * After the <code>PRODUCTS_LOADED</code> event, you can access the details of the products using <code>iap.products.getProduct('my-id')</code>.
+        * 
+        * @see com.freshplanet.ane.AirInAppPurchase.InAppPurchaseProducts
+        * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadedEvent
+        */
+        public function get products():InAppPurchaseProducts { return _products; }
         
+        /** Constructor. Use InAppPurchase.getInstance() instead! */
         public function InAppPurchase() {
             if (_instance)
                 throw Error( 'This is a singleton, use getInstance(), do not call the constructor directly');
@@ -59,12 +78,27 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
  
+        /** Return the singleton InAppPurchase instance.
+         *
+         * Example: <pre><code>
+         * var iap:InAppPurchase = InAppPurchase.getInstance();
+         * </code></pre>
+         */
         public static function getInstance():InAppPurchase {
             if (!_instance)
                 _instance = new InAppPurchase();
             return _instance;
         }
 
+        /** Initialize the library.
+         *
+         * @param googlePlayKey The Google Play API key
+         * @param debug Activate logging of debug information
+         *
+         * Example: <pre><code>
+         * iap.init("S0M3B4S364D4t4Fr0mG00gL3", true);
+         * </code></pre>
+         */
         public function init(googlePlayKey:String, debug:Boolean = false):void {
             this.debug = debug;
             if (this.isInAppPurchaseSupported) {
@@ -73,12 +107,24 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
         
-        // Internal note: we could only require the productId here,
-        // however ios (at least) requires the product to have been loaded before
-        // initiating the purchase.
-        // Presenting this API forces the user to do so.
+        /** Initiate a purchase.
+         *
+         * @param product The product to purchase.
+         * Example: <pre><code>
+         * iap.makePurchase(iap.products.getProduct('cc.fovea.babygoo1'));
+         * </code></pre>
+         *
+         * You should expect <code>PURCHASE_APPROVED</code> or <code>PURCHASE_ERROR</code> to be triggered.
+         *
+         * @see com.freshplanet.ane.AirInAppPurchase.events.PurchaseApprovedEvent
+         * @see com.freshplanet.ane.AirInAppPurchase.events.PurchaseErrorEvent
+         */
         public function makePurchase(product:InAppPurchaseProduct):void
         {
+            // Internal note: we could only require the productId here,
+            // however ios (at least) requires the product to have been loaded before
+            // initiating the purchase.
+            // Presenting this API forces the user to do so.
             if (this.isInAppPurchaseSupported) {
                 log("Purchasing", product.productId);
                 extCtx.call("makePurchase", product.productId);
@@ -89,7 +135,13 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
         
-        // Once a purchased has been approved, we can finish it.
+        /** Finalize a purchase.
+         *
+         * Once a purchased has been approved and the content delivered to the user,
+         * we can finish the purchase.
+         *
+         * @param receipt The transaction receipt associated with the purchase.
+         */
         public function finishPurchase(receipt:InAppPurchaseReceipt):void
         {
             if (this.isInAppPurchaseSupported)
@@ -112,6 +164,28 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
         
+        /** Load product information from the platform.
+         *
+         * @param productsId The list of identifiers of the products
+         * to be loaded, as defined in your platform's dashboard \
+         * (iTunesConnect or Google Play publisher console).
+         *
+         * The ANE differenciates between two types of purchases:
+         * consumable and subscriptions.
+         * <pre><code>
+         * iap.loadProducts(["cc.fovea.babygoo1", "cc.fovea.babygoo2"], ["cc.fovea.subscribe"]);
+         * </code></pre>
+         *
+         * You should expect <code>PRODUCTS_LOADED</code> and/or <code>PRODUCTS_LOAD_ERROR</code> events to be triggered,
+         * so you'd better setup your listener upfront!
+         *
+         * Note that it's possible that both events are triggered,
+         * in the case where some products are valids and some others
+         * are not.
+         * 
+         * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadedEvent
+         * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadErrorEvent
+         */
         public function loadProducts(productsId:Array, subscriptionIds:Array = null):void
         {
             if (!subscriptionIds)
@@ -126,7 +200,7 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
         
-        
+        /** Returns true if the user is allowed and able to make purchases */
         public function userCanMakeAPurchase():void 
         {
             if (this.isInAppPurchaseSupported)
@@ -139,6 +213,7 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
             
+        /*
         public function userCanMakeASubscription():void
         {
             if (Capabilities.manufacturer.indexOf('Android') > -1)
@@ -163,6 +238,7 @@ package com.freshplanet.ane.AirInAppPurchase
                     "InAppPurchase.makeSubscription is only supported on Android"));
             }
         }
+        */
 
 
         /*
@@ -181,7 +257,7 @@ package com.freshplanet.ane.AirInAppPurchase
         }
         */
 
-
+        /** Stop the ANE */
         public function stop():void
         {
             if (Capabilities.manufacturer.indexOf('Android') > -1)
@@ -191,7 +267,14 @@ package com.freshplanet.ane.AirInAppPurchase
             }
         }
 
-        
+        /** Returns true if the platform supports In-App Purchases.
+         *
+         * Example: <pre><code>
+         * if (iap.isInAppPurchaseSupported)
+         *   // Yay! We can use In-App Purchases!
+         *   // Let's make tons of money
+         * </code></pre>
+         */
         public function get isInAppPurchaseSupported():Boolean
         {
             var value:Boolean = Capabilities.manufacturer.indexOf('iOS') > -1 || Capabilities.manufacturer.indexOf('Android') > -1;
@@ -201,6 +284,7 @@ package com.freshplanet.ane.AirInAppPurchase
             return value;
         }
         
+        /** Handler of events triggered by the native code. */
         private function onStatus(event:StatusEvent):void
         {
             var dataString:String = event.level;

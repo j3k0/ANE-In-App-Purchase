@@ -20,7 +20,15 @@ package com.freshplanet.ane.AirInAppPurchase.events
 {
     import com.freshplanet.ane.AirInAppPurchase.InAppPurchaseProducts;
 
-    /** Event of type InAppPurchaseEvent.PRODUCTS_LOADED */
+    /** Event of type InAppPurchaseEvent.PRODUCTS_LOADED.
+     * <p>
+     * Triggered when the ANE failed to load product information with <code>loadProducts()</code>.
+     * </p><p>
+     * <code>products</code> provides access to the loaded <code>InAppPurchaseProducts</code>.
+     * </p>
+     * @see com.freshplanet.ane.AirInAppPurchase.InAppPurchaseProducts
+     * @see com.freshplanet.ane.AirInAppPurchase.InAppPurchase
+     */
 	public class ProductsLoadedEvent extends InAppPurchaseEvent
 	{
         /** List of product information */

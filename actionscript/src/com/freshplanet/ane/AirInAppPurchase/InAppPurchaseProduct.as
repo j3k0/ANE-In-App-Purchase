@@ -1,5 +1,6 @@
 package com.freshplanet.ane.AirInAppPurchase
 {
+    /** A product for purchase */
     public class InAppPurchaseProduct
     {
         private var _productId:String;
@@ -13,8 +14,10 @@ package com.freshplanet.ane.AirInAppPurchase
 
         public function InAppPurchaseProduct() {}
 
-        // Only InAppPurchase can initialize some content.
-        // This forces users to use the `InAppPurchase.loadProductsInfo` method.
+        /** @private
+         *
+         * Only InAppPurchase can initialize some content.
+         * This forces users to use the `InAppPurchase.loadProducts` method. */
         static internal function fromJSON(json:Object):InAppPurchaseProduct {
             var ret:InAppPurchaseProduct = new InAppPurchaseProduct();
             if (json.productId) ret._productId = json.productId;
@@ -27,6 +30,7 @@ package com.freshplanet.ane.AirInAppPurchase
             return ret;
         }
 
+        /** Return a JSON representation of the product */
         public function toJSON():Object {
             return {
                 productId:_productId,
@@ -39,12 +43,25 @@ package com.freshplanet.ane.AirInAppPurchase
             };
         }
 
+        /** Product identifier */
         public function get productId():String { return _productId; }
+
+        /** Localized title */
         public function get title():String { return _title; }
+
+        /** Localized description */
         public function get description():String { return _description; }
+
+        /** Localized price */
         public function get price():String { return _price; }
+
+        /** Currency code */
         public function get priceCurrencyCode():String { return _priceCurrencyCode; }
+
+        /** Currency symbol */
         public function get priceCurrencySymbol():String { return _priceCurrencySymbol; }
+
+        /** Amount of money asked for for this product */
         public function get value():Number { return _value; }
     }
 }

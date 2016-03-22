@@ -18,6 +18,10 @@
 
 package com.freshplanet.ane.AirInAppPurchase
 {
+    /** Proof of a transaction.
+     *
+     * The transaction could be either in progress or finished.
+     */
     public class InAppPurchaseReceipt
     {
         public static const TYPE_APP_STORE:String = "AppStore";
@@ -29,6 +33,7 @@ package com.freshplanet.ane.AirInAppPurchase
         private var _signature:String;
         private var _signedData:Object;
 
+        /** @private */
         public function InAppPurchaseReceipt(type:String, data:String, productId:String, signature:String, signedData:Object) {
             _type = type;
             _data = data;
@@ -37,16 +42,28 @@ package com.freshplanet.ane.AirInAppPurchase
             _signedData = signedData;
         }
 
+        /** @private */
         public function equals(other:InAppPurchaseReceipt):Boolean {
             return type == other.type
                 && JSON.stringify(data) == JSON.stringify(other.data)
                 && productId == other.productId;
         }
 
+        /** The type of receipt.
+         *
+         * @see InAppPurchaseReceiptType */
         public function get type():String { return _type; }
+
+        /** Platform dependent internal data of the receipt */
         public function get data():String { return _data; }
+
+        /** Product identifier */
         public function get productId():String { return _productId; }
+
+        /** Signature string */
         public function get signature():String { return _signature; }
+
+        /** Signed data */
         public function get signedData():Object { return _signedData; }
     }
 }

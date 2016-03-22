@@ -30,12 +30,12 @@ package com.freshplanet.ane.AirInAppPurchase.events
         /** Platform failed to perform the purchase */
         public static const PLATFORM_ERROR:int = 3;
 
-        /** Error code */
+        /** Error code. See the constants defined in this class for details. */
         public function get code():int {
             return data.code;
         }
 
-        /** Error message */
+        /** Description of the error in plain english. */
         public function get message():String {
             return data.message;
         }

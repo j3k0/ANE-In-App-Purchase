@@ -132,7 +132,7 @@ void *AirInAppRefToSelf;
     NSData *receipt = [NSData dataWithContentsOfURL:[[NSBundle mainBundle] appStoreReceiptURL]];
     NSString* receiptString = [[[NSString alloc] initWithData:receipt encoding:NSUTF8StringEncoding] autorelease];
     [data setValue:receiptString forKey:@"receipt"];
-    [data setValue:@"AppStore"   forKey:@"receiptType"];
+    [data setValue:@"AppleAppStore"   forKey:@"receiptType"];
     
     FREDispatchStatusEventAsync(AirInAppCtx, (uint8_t*)"PURCHASE_APPROVED", (uint8_t*)[[data JSONString] UTF8String]); 
 }

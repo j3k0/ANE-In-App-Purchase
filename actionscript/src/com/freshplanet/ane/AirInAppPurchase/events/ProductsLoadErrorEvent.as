@@ -18,7 +18,14 @@
 
 package com.freshplanet.ane.AirInAppPurchase.events
 {
-    /** Event of type InAppPurchaseEvent.PRODUCTS_LOAD_ERROR */
+    /** Event of type InAppPurchaseEvent.PRODUCTS_LOAD_ERROR
+     * <p>
+     * Triggered when the ANE failed to load product information with <code>loadProducts()</code>.
+     * </p><p>
+     * <code>productIds</code> provides the list of product identifiers that failed to load.
+     * </p>
+     * @see com.freshplanet.ane.AirInAppPurchase.InAppPurchase.loadProducts
+     */
 	public class ProductsLoadErrorEvent extends InAppPurchaseEvent
 	{
         /** List of ids of products that failed to load */
