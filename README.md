@@ -41,7 +41,8 @@ On Android:
 </android>
 ```
 
-## Small example
+Small example
+--------
 
     var iap:InAppPurchase = InAppPurchase.getInstance();
 
@@ -74,6 +75,13 @@ cp example.build.config build.config
 ant
 ```
 
+Notes
+------
+
+ * When you develop using Air there is no problem running in debug mode on your device and connecting to the debugger remotely from a connected device.
+ * You can see debug and error messages from the ANE using LogCat. It's very easy to use and you can just run it from the command line when you have a connected device. There are some free LogCat tools with GUIs. Many times when there is an exception, you get nothing in Air but by checking the log you can see what's wrong.
+ * The user that is used to test in app purchases on the Android device cannot be the user that is the administrator of the app. This is Google's limitation (they say this is because you cannot buy from yourself but come on Google... you solved harder problems!)
+ * You can test with the static predefined products that Google have available but you still must consume them to test again! I did not find any way to consume from the admin console, so I suggest you implement consuming before your first test run. But really, the easiest way is just to define some test products and test users.
 
 Authors
 ------

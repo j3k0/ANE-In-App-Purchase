@@ -92,10 +92,12 @@ package com.freshplanet.ane.AirInAppPurchase
 
         /** Initialize the library.
          *
-         * @param googlePlayKey The Google Play API key
+         * @param googlePlayKey The GOOGLE_PLAY_LICENSE_KEY. It can be found in the Google Play developer console under the Services and APIs section.
          * @param debug Activate logging of debug information
          *
-         * Example: <pre><code>
+         * <p>NOTE: The initialization process is asynchronous, so make sure you wait enough time for the initialization to complete. (yes, it's ugly)</p>
+         *
+         * <p>Example:</p><pre><code>
          * iap.init("S0M3B4S364D4t4Fr0mG00gL3", true);
          * </code></pre>
          */
