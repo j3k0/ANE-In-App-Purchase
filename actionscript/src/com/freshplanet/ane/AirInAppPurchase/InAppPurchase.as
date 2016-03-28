@@ -40,7 +40,7 @@ package com.freshplanet.ane.AirInAppPurchase
                 trace.apply(null, args);
             }
         }
-        
+
         /** ANE's ExtensionContext */
         private var extCtx:*;
 
@@ -53,16 +53,16 @@ package com.freshplanet.ane.AirInAppPurchase
         /** The loaded InAppPurchaseProducts.
         *
         * The ANE maintains a map <code>productIdentifier</code> ⇒ <code>InAppPurchaseProduct</code>.
-        * 
+        *
         * This map is filled when <code>PRODUCTS_LOADED</code> is triggered (it's empty before that).
-        * 
+        *
         * After the <code>PRODUCTS_LOADED</code> event, you can access the details of the products using <code>iap.products.getProduct('my-id')</code>.
-        * 
+        *
         * @see com.freshplanet.ane.AirInAppPurchase.InAppPurchaseProducts
         * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadedEvent
         */
         public function get products():InAppPurchaseProducts { return _products; }
-        
+
         /** Constructor. Use InAppPurchase.getInstance() instead! */
         public function InAppPurchase() {
             if (_instance)
@@ -77,7 +77,7 @@ package com.freshplanet.ane.AirInAppPurchase
                     log('extCtx is null.');
             }
         }
- 
+
         /** Return the singleton InAppPurchase instance.
          *
          * Example: <pre><code>
@@ -101,15 +101,16 @@ package com.freshplanet.ane.AirInAppPurchase
          * iap.init("S0M3B4S364D4t4Fr0mG00gL3", true);
          * </code></pre>
          */
-        public function init(googlePlayKey:String, debug:Boolean = false):void {
+        private function initialize(googlePlayKey:String, debug:Boolean = false):void {
             this.debug = debug;
             if (this.isInAppPurchaseSupported) {
+                // TODO: add a LIBRARY_INITIALIZED event
                 log("Initializing library");
                 extCtx.call("initLib", googlePlayKey, debug);
             }
         }
-        
-        /** Initiate a purchase.
+
+        /** Initiate a purchase request.
          *
          * @param product The product to purchase.
          * Example: <pre><code>
@@ -121,7 +122,7 @@ package com.freshplanet.ane.AirInAppPurchase
          * @see com.freshplanet.ane.AirInAppPurchase.events.PurchaseApprovedEvent
          * @see com.freshplanet.ane.AirInAppPurchase.events.PurchaseErrorEvent
          */
-        public function makePurchase(product:InAppPurchaseProduct):void
+        public function requestPurchase(product:InAppPurchaseProduct):void
         {
             // Internal note: we could only require the productId here,
             // however ios (at least) requires the product to have been loaded before
@@ -136,7 +137,7 @@ package com.freshplanet.ane.AirInAppPurchase
                     "InAppPurchase not supported"));
             }
         }
-        
+
         /** Finalize a purchase.
          *
          * Once a purchased has been approved and the content delivered to the user,
@@ -165,7 +166,7 @@ package com.freshplanet.ane.AirInAppPurchase
                 }
             }
         }
-        
+
         /** Load product information from the platform.
          *
          * @param productsId The list of identifiers of the products
@@ -184,7 +185,7 @@ package com.freshplanet.ane.AirInAppPurchase
          * Note that it's possible that both events are triggered,
          * in the case where some products are valids and some others
          * are not.
-         * 
+         *
          * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadedEvent
          * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadErrorEvent
          */
@@ -201,9 +202,9 @@ package com.freshplanet.ane.AirInAppPurchase
                 this.dispatchEvent(new ProductsLoadErrorEvent(productsId.concat(subscriptionIds)));
             }
         }
-        
+
         /** Returns true if the user is allowed and able to make purchases */
-        public function userCanMakeAPurchase():void 
+        public function userCanMakeAPurchase():void
         {
             if (this.isInAppPurchaseSupported)
             {
@@ -214,7 +215,7 @@ package com.freshplanet.ane.AirInAppPurchase
                 this.dispatchEvent(new InAppPurchaseEvent(InAppPurchaseEvent.PURCHASE_DISABLED));
             }
         }
-            
+
         /*
         public function userCanMakeASubscription():void
         {
@@ -227,7 +228,7 @@ package com.freshplanet.ane.AirInAppPurchase
                 this.dispatchEvent(new InAppPurchaseEvent(InAppPurchaseEvent.PURCHASE_DISABLED));
             }
         }
-        
+
         public function makeSubscription(product:InAppPurchaseProduct):void
         {
             if (Capabilities.manufacturer.indexOf('Android') > -1) {
@@ -285,7 +286,7 @@ package com.freshplanet.ane.AirInAppPurchase
             }
             return value;
         }
-        
+
         /** Handler of events triggered by the native code. */
         private function onStatus(event:StatusEvent):void
         {
@@ -303,8 +304,7 @@ package com.freshplanet.ane.AirInAppPurchase
 
             var receipt:InAppPurchaseReceipt;
             var e:InAppPurchaseEvent;
-            switch(event.code)
-            {
+            switch (event.code) {
                 case "DEBUG":
                     log("[NATIVE]", dataString);
                     break;
