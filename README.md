@@ -5,13 +5,15 @@ This is an [Air native extension](http://www.adobe.com/devnet/air/native-extensi
 
 This ANE supports In-App Purchase for both iOS and Android. It allows to handle consumable types of purchases.
 
-It's a fork of freshplanet's ANE with significant improvements in terms of API. It aims to be:
+It's a **fork of freshplanet's ANE** with **significant improvements in terms of API**. It aims to be:
 
  * Easier to use
  * Less error-prone
  * Self-documented
 
 Those improvements have been drawn from my experience of developing the [https://github.com/j3k0/cordova-plugin-purchase](cordova in-app-purchase plugin).
+
+You will find the [API documentation here](http://j3k0.github.io/ANE-In-App-Purchase/asdoc-output/).
 
 Notes
 ---------
@@ -60,6 +62,7 @@ Small example
 
     iap.loadProducts(["cc.fovea.babygoo1", "cc.fovea.babygoo2"], ["cc.fovea.subscribe"]);
 
+You will find the [full API documentation here](http://j3k0.github.io/ANE-In-App-Purchase/asdoc-output/).
 
 Build script
 ---------
