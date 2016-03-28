@@ -23,6 +23,7 @@ project.properties
 
 # Xcode
 xcuserdata
+ios/build
 
 # OS X
 Icon
@@ -32,3 +33,4 @@ Thumbs.db
 # intellij
 .idea
 *.iml
+
