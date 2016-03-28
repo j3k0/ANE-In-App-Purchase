@@ -30,16 +30,27 @@ package com.freshplanet.ane.AirInAppPurchase
         private var _type:String;
         private var _data:String;
         private var _productId:String;
-        private var _signature:String;
-        private var _signedData:Object;
+        private var _signature:String; // android only
+        private var _signedData:Object; // android only
+        private var _transactionId:String;
+        private var _transactionDate:String; // YYYY-MM-DD HH:MM:SS ±HHMM
 
         /** @private */
-        public function InAppPurchaseReceipt(type:String, data:String, productId:String, signature:String, signedData:Object) {
+        public function InAppPurchaseReceipt(
+            type:String,
+            data:String,
+            productId:String,
+            signature:String,
+            signedData:Object,
+            transactionId:String,
+            transactionDate:String) {
             _type = type;
             _data = data;
             _productId = productId;
             _signature = signature;
             _signedData = signedData;
+            _transactionId = transactionId;
+            _transactionDate = transactionDate;
         }
 
         /** @private */
@@ -65,6 +76,12 @@ package com.freshplanet.ane.AirInAppPurchase
 
         /** Signed data */
         public function get signedData():Object { return _signedData; }
+
+        /** Transaction Identifier */
+        public function get transactionId():String { return _transactionId; }
+
+        /** Transaction Date (YYYY-MM-DD HH:MM:SS ±HHMM) */
+        public function get transactionDate():String { return _transactionDate; }
     }
 }
 

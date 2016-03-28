@@ -46,16 +46,19 @@ Small example
 
     var iap:InAppPurchase = InAppPurchase.getInstance();
 
-    iap.addEventListener(InAppPurchaseEvent.PRODUCT_INFO_RECEIVED, function(event:InAppPurchaseEvent):void {
+    iap.addEventListener(InAppPurchaseEvent.PRODUCTS_LOADED, function(event:ProductsLoadedEvent):void {
         trace("Products loaded");
-        var product1:Object = event.data['cc.fovea.babygoo1'];
-        // Do your magic to 
+        var product:InAppPurchaseProduct = event.products.find('cc.fovea.babygoo1');
+        // Do your magic
     });
 
-    if (iap.isInAppPurchaseSupported) {
-        iap.getProductsInfo(["cc.fovea.babygoo1", "cc.fovea.babygoo2"], ["cc.fovea.subscribe"]);
-    }
+    iap.addEventListener(InAppPurchaseEvent.PURCHASE_APPROVED, function(event:PurchaseApprovedEvent):void {
+        trace("Purchase approved");
+        var receipt:InAppPurchaseReceipt = event.receipt;
+        // Provide feature
+    });
 
+    iap.loadProducts(["cc.fovea.babygoo1", "cc.fovea.babygoo2"], ["cc.fovea.subscribe"]);
 
 
 Build script

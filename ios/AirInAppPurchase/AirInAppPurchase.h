@@ -19,7 +19,7 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 #import "FlashRuntimeExtensions.h"
-#import "JSONKit.h"
+// #import "JSONKit.h"
 
 @interface AirInAppPurchase : NSObject <SKPaymentTransactionObserver, SKProductsRequestDelegate>
 
@@ -28,6 +28,11 @@
 - (void) failedTransaction:(SKPaymentTransaction*)transaction;
 - (void) purchasingTransaction:(SKPaymentTransaction*)transaction;
 - (void) restoreTransaction:(SKPaymentTransaction*)transaction;
+
+- (void)debug:(NSString *)msg;
+- (void)dispatchEvent:(const char*)eventName withString:(NSString *)str;
+- (void)dispatchEvent:(const char*)eventName withDictionary:(NSMutableDictionary *)json;
+- (void)dispatchEvent:(const char*)eventName withArray:(NSArray *)json;
 @end
 
 FREObject AirInAppPurchaseInit(FREContext context, void* functionData, uint32_t argc, FREObject argv[]);

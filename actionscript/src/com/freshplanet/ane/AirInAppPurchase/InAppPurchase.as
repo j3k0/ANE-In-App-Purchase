@@ -98,10 +98,10 @@ package com.freshplanet.ane.AirInAppPurchase
          * <p>NOTE: The initialization process is asynchronous, so make sure you wait enough time for the initialization to complete. (yes, it's ugly)</p>
          *
          * <p>Example:</p><pre><code>
-         * iap.init("S0M3B4S364D4t4Fr0mG00gL3", true);
+         * iap.initialize("S0M3B4S364D4t4Fr0mG00gL3", true);
          * </code></pre>
          */
-        private function initialize(googlePlayKey:String, debug:Boolean = false):void {
+        public function initialize(googlePlayKey:String, debug:Boolean = false):void {
             this.debug = debug;
             if (this.isInAppPurchaseSupported) {
                 // TODO: add a LIBRARY_INITIALIZED event
@@ -291,6 +291,11 @@ package com.freshplanet.ane.AirInAppPurchase
         private function onStatus(event:StatusEvent):void
         {
             var dataString:String = event.level;
+            if (event.code == 'DEBUG') {
+                log("[NATIVE]", dataString);
+                return;
+            }
+
             log(event.code);
             log(dataString);
 
@@ -305,9 +310,6 @@ package com.freshplanet.ane.AirInAppPurchase
             var receipt:InAppPurchaseReceipt;
             var e:InAppPurchaseEvent;
             switch (event.code) {
-                case "DEBUG":
-                    log("[NATIVE]", dataString);
-                    break;
                 case "PRODUCTS_LOADED":
                     _products.fromJSON(data.details);
                     e = new ProductsLoadedEvent(_products);
@@ -316,7 +318,7 @@ package com.freshplanet.ane.AirInAppPurchase
                     e = new ProductsLoadErrorEvent(data);
                     break;
                 case "PURCHASE_APPROVED":
-                    receipt = new InAppPurchaseReceipt(data.receiptType, data.receipt, data.productId, data.signature, data.signedData);
+                    receipt = new InAppPurchaseReceipt(data.receiptType, data.receipt, data.productId, data.signature, data.signedData, data.transactionId, data.transactionDate);
                     _pendingReceipts.push(receipt);
                     e = new PurchaseApprovedEvent(receipt);
                     break;
