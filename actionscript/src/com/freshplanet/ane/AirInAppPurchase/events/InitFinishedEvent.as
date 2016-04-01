@@ -18,6 +18,8 @@
 
 package com.freshplanet.ane.AirInAppPurchase.events
 {
+    import com.freshplanet.ane.AirInAppPurchase.InAppPurchaseToken;
+
     /** Event of type InAppPurchaseEvent.INIT_FINISHED
      * <p>
      * Triggered when the ANE failed to initialize with <code>initialize()</code>.
@@ -26,6 +28,8 @@ package com.freshplanet.ane.AirInAppPurchase.events
      */
 	public class InitFinishedEvent extends InAppPurchaseEvent
 	{
+        public function get token():InAppPurchaseToken { return new InAppPurchaseToken("InitFinishedEvent"); }
+
 		public function InitFinishedEvent(bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(InAppPurchaseEvent.INIT_FINISHED, {}, bubbles, cancelable);
 		}

@@ -68,7 +68,7 @@ package com.freshplanet.ane.AirInAppPurchase
             if (_instance)
                 throw Error( 'This is a singleton, use getInstance(), do not call the constructor directly');
 
-            log("v0.1.0");
+            log("v0.2.0");
             if (this.isInAppPurchaseSupported) {
                 extCtx = ExtensionContext.createExtensionContext("com.freshplanet.AirInAppPurchase", null);
                 if (extCtx != null)
@@ -189,8 +189,12 @@ package com.freshplanet.ane.AirInAppPurchase
          * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadedEvent
          * @see com.freshplanet.ane.AirInAppPurchase.events.ProductsLoadErrorEvent
          */
-        public function loadProducts(productsId:Array, subscriptionIds:Array = null):void
+        public function loadProducts(token:InAppPurchaseToken, productsId:Array, subscriptionIds:Array = null):void
         {
+            if (!token) {
+                throw new Error("InAppPurchase.loadProducts() -> missing InAppPurchaseToken");
+            }
+
             if (!subscriptionIds)
                 subscriptionIds = [];
 
@@ -204,8 +208,12 @@ package com.freshplanet.ane.AirInAppPurchase
         }
 
         /** Returns true if the user is allowed and able to make purchases */
-        public function userCanMakeAPurchase():void
+        public function userCanMakeAPurchase(token:InAppPurchaseToken):void
         {
+            if (!token) {
+                throw new Error("InAppPurchase.userCanMakeAPurchase() -> missing InAppPurchaseToken");
+            }
+
             if (this.isInAppPurchaseSupported)
             {
                 log("Checking if user can make a purchase");
@@ -261,8 +269,12 @@ package com.freshplanet.ane.AirInAppPurchase
         */
 
         /** Stop the ANE */
-        public function stop():void
+        public function stop(token:InAppPurchaseToken):void
         {
+            if (!token) {
+                throw new Error("InAppPurchase.stop() -> missing InAppPurchaseToken");
+            }
+
             if (Capabilities.manufacturer.indexOf('Android') > -1)
             {
                 log("Stopping library");
