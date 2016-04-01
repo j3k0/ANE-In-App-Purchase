@@ -22,7 +22,19 @@ package com.freshplanet.ane.AirInAppPurchase.events
     
     public class InAppPurchaseEvent extends Event
     {
-        
+        /** Triggered when loadProducts succeeds to load product information.
+         *
+         * Event will be an instance of ProductsLoadedEvent */
+        public static const PRODUCTS_LOADED:String = "productsLoaded";
+
+        /** Triggered when loadProducts failed to load some product information
+         *
+         * Event will be an instance of ProductsLoadErrorEvent */
+        public static const PRODUCTS_LOAD_ERROR:String = "productsLoadError";
+
+        public static const INIT_FINISHED:String = "initFinished";
+        public static const INIT_ERROR:String = "initError";
+
         // init -> check if previously purchases not being processed by the app
         public static const PURCHASE_APPROVED:String = "purchaseApproved";
         public static const PURCHASE_ERROR:String    = "purchaseError";
@@ -36,21 +48,11 @@ package com.freshplanet.ane.AirInAppPurchase.events
         public static const PURCHASE_DISABLED:String = "purchaseDisabled";
         
         // user can make a subscription
-        public static const SUBSCRIPTION_ENABLED:String = "subsEnabled";
+        //public static const SUBSCRIPTION_ENABLED:String = "subsEnabled";
         // user cannot make a subscription
-        public static const SUBSCRIPTION_DISABLED:String = "subsDisabled";
+        //public static const SUBSCRIPTION_DISABLED:String = "subsDisabled";
 
-        /** Triggered when loadProducts succeeds to load product information.
-         *
-         * Event will be an instance of ProductsLoadedEvent */
-        public static const PRODUCTS_LOADED:String = "productsLoaded";
-
-        /** Triggered when loadProducts failed to load some product information
-         *
-         * Event will be an instance of ProductsLoadErrorEvent */
-        public static const PRODUCTS_LOAD_ERROR:String = "productsLoadError";
-
-        public static const RESTORE_INFO_RECEIVED:String = "restoreInfoReceived";
+        // public static const RESTORE_INFO_RECEIVED:String = "restoreInfoReceived";
         
         private var _data:Object;
         public function get data():Object { return _data; }

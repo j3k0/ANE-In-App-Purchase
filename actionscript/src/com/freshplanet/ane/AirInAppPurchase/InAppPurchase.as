@@ -310,6 +310,12 @@ package com.freshplanet.ane.AirInAppPurchase
             var receipt:InAppPurchaseReceipt;
             var e:InAppPurchaseEvent;
             switch (event.code) {
+                case "INIT_FINISHED":
+                    e = new InitFinishedEvent();
+                    break;
+                case "INIT_ERROR":
+                    e = new InitErrorEvent(dataString);
+                    break;
                 case "PRODUCTS_LOADED":
                     _products.fromJSON(data.details);
                     e = new ProductsLoadedEvent(_products);

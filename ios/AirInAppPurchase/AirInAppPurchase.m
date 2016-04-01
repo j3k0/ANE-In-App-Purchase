@@ -90,6 +90,7 @@ void aneDebug(NSString *msg);
 - (void) registerObserver
 {
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+    [self dispatchEvent:"INIT_FINISHED" withString:@"SUCCESS"];
 }
 
 
@@ -431,9 +432,6 @@ DEFINE_ANE_FUNCTION(removePurchaseFromQueue)
 }
 
 
-
-
-
 // ContextInitializer()
 //
 // The context initializer is called when the runtime creates the extension context instance.
@@ -441,7 +439,7 @@ void AirInAppContextInitializer(void* extData, const uint8_t* ctxType, FREContex
                              uint32_t* numFunctionsToTest, const FRENamedFunction** functionsToSet) 
 {    
     // Register the links btwn AS3 and ObjC. (dont forget to modify the nbFuntionsToLink integer if you are adding/removing functions)
-    NSInteger nbFuntionsToLink = 5;
+    uint32_t nbFuntionsToLink = 5;
     *numFunctionsToTest = nbFuntionsToLink;
     
     FRENamedFunction* func = (FRENamedFunction*) malloc(sizeof(FRENamedFunction) * nbFuntionsToLink);

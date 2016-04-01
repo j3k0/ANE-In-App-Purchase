@@ -87,10 +87,12 @@ public class ExtensionContext extends FREContext implements IabHelper.OnIabSetup
     	if (result.isSuccess())
     	{
     		Extension.log("Initialized IAB Helper successfully");
+	        dispatchStatusEventAsync("INIT_FINISHED", "SUCCESS") ;
         }
     	else
     	{
     		Extension.log("Failed to initialize IAB Helper: " + result.getMessage());
+			dispatchStatusEventAsync("INIT_ERROR", result.getMessage());
     	}
     }
 	
@@ -112,12 +114,12 @@ public class ExtensionContext extends FREContext implements IabHelper.OnIabSetup
 		{
 			Extension.log("Query inventory successful: " + inventory);
 			String data = inventory != null ? inventory.toString() : "";
-	        dispatchStatusEventAsync("RESTORE_INFO_RECEIVED", data) ;
+	        dispatchStatusEventAsync("LOAD_INVENTORY_FINISHED", data) ;
 		}
 		else
 		{
 			Extension.log("Failed to query inventory: " + result.getMessage());
-			dispatchStatusEventAsync("PRODUCT_INFO_ERROR", "ERROR");
+			dispatchStatusEventAsync("LOAD_INVENTORY_ERROR", result.getMessage());
 		}
     }
 }
