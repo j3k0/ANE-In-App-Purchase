@@ -68,7 +68,7 @@ package com.freshplanet.ane.AirInAppPurchase
             if (_instance)
                 throw Error( 'This is a singleton, use getInstance(), do not call the constructor directly');
 
-            log("v0.2.0");
+            log("v1.0.0");
             if (this.isInAppPurchaseSupported) {
                 extCtx = ExtensionContext.createExtensionContext("com.freshplanet.AirInAppPurchase", null);
                 if (extCtx != null)
