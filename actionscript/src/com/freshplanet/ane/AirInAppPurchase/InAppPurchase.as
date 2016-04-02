@@ -149,8 +149,8 @@ package com.freshplanet.ane.AirInAppPurchase
         {
             if (this.isInAppPurchaseSupported)
             {
-                log("Removing receipt from queue", receipt.productId, receipt.data);
-                extCtx.call("removePurchaseFromQueue", receipt.productId, receipt.data);
+                log("Removing receipt from queue", receipt.productId, receipt.data || receipt.signedData);
+                extCtx.call("removePurchaseFromQueue", receipt.productId, receipt.data || receipt.signedData);
 
                 var found:Boolean = false;
                 _pendingReceipts = _pendingReceipts.filter(function(pending:InAppPurchaseReceipt, index:int, array:*):Boolean {
@@ -299,6 +299,78 @@ package com.freshplanet.ane.AirInAppPurchase
             return value;
         }
 
+        private function approvePurchase(json:Object):void {
+            //
+            // - Android purchases looks like this:
+            // ------------------------------------
+            //
+            //  "productId":"com.triominos.silver.small",
+            //  "receipt":{
+            //      "signedData":"stringified-json. see below",
+            //      "signature":"bAsE64sTuFf=="
+            //  },
+            //  "receiptType":"GooglePlay"
+            //
+            // signedData JSON.parsed:
+            //
+            //  "orderId":"GPA.4242-4242-4242-42424",
+            //  "packageName":"air.nl.goliathgames.triominos",
+            //  "productId":"com.triominos.silver.small",
+            //  "purchaseTime":1459577352266,
+            //  "purchaseState":0,
+            //  "purchaseToken":"bAsE64oRsOmEtHiNg"
+            //
+            // - iOS purchases looks like this:
+            // --------------------------------
+            //
+            //  "receiptType":"AppleAppStore",
+            //  "receipt":"bAsE64oRsOmEtHiNg",
+            //  "productId":"com.triominos.silver.small",
+            //  "transactionId":"100012301",
+            //  "transactionDate":1459577352266
+            //
+            var receipt:InAppPurchaseReceipt;
+            if (json && json.receiptType == InAppPurchaseReceiptType.GOOGLE_PLAY) {
+                var data:Object = {};
+                try {
+                    data = JSON.parse(json.receipt.signedData);
+                }
+                catch (err:Error) {
+                    // Can't parse signed data... Probably shouldn't happen,
+                    // but it's not so important.
+                }
+                receipt = new InAppPurchaseReceipt(
+                    json.receiptType,
+                    '',
+                    json.productId,
+                    json.receipt.signature || null,
+                    json.receipt.signedData || null,
+                    data.orderId,
+                    data.purchaseTime);
+            }
+            else if (json && json.type == InAppPurchaseReceiptType.APPLE_APP_STORE) {
+                receipt = new InAppPurchaseReceipt(
+                    json.receiptType,
+                    json.receipt,
+                    json.productId,
+                    null,
+                    null,
+                    data.transactionId,
+                    data.transactionDate);
+            }
+
+            if (receipt) {
+                _pendingReceipts.push(receipt);
+                dispatchEvent(new PurchaseApprovedEvent(receipt));
+            }
+        }
+
+        private function approvePurchases(array:Array):void {
+            if (!array || !array.length) return;
+            for (var i:int = 0; i < array.length; ++i)
+                approvePurchase(array[i]);
+        }
+
         /** Handler of events triggered by the native code. */
         private function onStatus(event:StatusEvent):void
         {
@@ -319,35 +391,32 @@ package com.freshplanet.ane.AirInAppPurchase
                 log("(isn't json)");
             }
 
-            var receipt:InAppPurchaseReceipt;
-            var e:InAppPurchaseEvent;
             switch (event.code) {
                 case "INIT_FINISHED":
-                    e = new InitFinishedEvent();
+                    dispatchEvent(new InitFinishedEvent());
                     break;
                 case "INIT_ERROR":
-                    e = new InitErrorEvent(dataString);
+                    dispatchEvent(new InitErrorEvent(dataString));
                     break;
                 case "PRODUCTS_LOADED":
                     _products.fromJSON(data.details);
-                    e = new ProductsLoadedEvent(_products);
+                    dispatchEvent(new ProductsLoadedEvent(_products));
+                    approvePurchases(data.purchases);
                     break;
                 case "PRODUCTS_LOAD_ERROR":
-                    e = new ProductsLoadErrorEvent(data);
+                    dispatchEvent(new ProductsLoadErrorEvent(data));
                     break;
                 case "PURCHASE_APPROVED":
-                    receipt = new InAppPurchaseReceipt(data.receiptType, data.receipt, data.productId, data.signature, data.signedData, data.transactionId, data.transactionDate);
-                    _pendingReceipts.push(receipt);
-                    e = new PurchaseApprovedEvent(receipt);
+                    approvePurchase(data);
                     break;
                 case "PURCHASE_ERROR":
-                    e = new PurchaseErrorEvent(PurchaseErrorEvent.PLATFORM_ERROR, dataString);
+                    dispatchEvent(new PurchaseErrorEvent(PurchaseErrorEvent.PLATFORM_ERROR, dataString));
                     break;
                 case "PURCHASE_ENABLED":
-                    e = new InAppPurchaseEvent(InAppPurchaseEvent.PURCHASE_ENABLED);
+                    dispatchEvent(new InAppPurchaseEvent(InAppPurchaseEvent.PURCHASE_ENABLED));
                     break;
                 case "PURCHASE_DISABLED":
-                    e = new InAppPurchaseEvent(InAppPurchaseEvent.PURCHASE_DISABLED);
+                    dispatchEvent(new InAppPurchaseEvent(InAppPurchaseEvent.PURCHASE_DISABLED));
                     break;
                 /** TODO:
                 case "SUBSCRIPTION_ENABLED":
@@ -362,9 +431,43 @@ package com.freshplanet.ane.AirInAppPurchase
                 */
                 default:
             }
-            if (e) {
-                this.dispatchEvent(e);
-            }
+        }
+    }
+}
+
+/*
+ Example payloads
+ ----------------
+
+ PRODUCTS_LOADED
+
+ {
+    "purchases": [{
+        "productId":"com.triominos.silver.small",
+        "receipt":{
+            "signedData":"{\"orderId\":\"GPA.1390-6907-9086-01962\",\"packageName\":\"air.nl.goliathgames.triominos\",\"productId\":\"com.triominos.silver.small\",\"purchaseTime\":1459577352266,\"purchaseState\":0,\"purchaseToken\":\"necmeibbddipnglcldamkffm.AO-J1OwLxpqrntiRrneewF312BWxGqh9NGyZDs8q2KwSNDpGlpynyJn6QUvsL7hD0XcfEOgiPpxaqUKSZqeC1uSwLSSUFrwiTrRzARAo4Nbl5F36Q3KhA9HtY5VOZr70n7t8O3HNhLvEt94nTMzKNYZ875xa6axDCg\"}",
+            "signature":"b+h12628gpw6\/8NMORZ+eWddTM3g5AzpLlvQOFvrXsLkjBh5Z0JzrGPHMhgysgCmDaHeKhueHr6dSp5UmFK1umkj1oH7vem6oqRD5+QPMZOe50NpBcC6Gd7SeQFzIgke8V\/GgptEyUjuSz7mYNvI99wqXZ5d66lTdMMzGAa5GPDTJyWRkY9O5zaoGV760QeQgGx5gDOzXfwgT4zNC\/\/Sh5jYfipI6HjM1DIa55T7A0OtVqF0s4W9l23mh1YhkJ1+ZiCmJZYv4+Zs1pXnqmR5\/R6+EosRkHBDyvT\/Fpj4BfZiFItlcmyfngSOzNbDp\/bxL\/lPUQcMzsoTsSnWGeX8Aw=="
+        },
+        "receiptType":"GooglePlay"
+    }],
+    "details":{
+        "com.triominos.gold.small": {
+            "productId":"com.triominos.gold.small",
+            "type":"inapp",
+            "price":"LBP1,500",
+            "price_amount_micros":1500000000,
+            "price_currency_code":"LBP",
+            "title":"25 Gold (Triominos)",
+            "description":"A small pile of gold coins"
+        },
+        "com.triominos.silver.medium": {
+            "productId":"com.triominos.silver.medium",
+            "type":"inapp",
+            "price":"LBP2,782",
+            "price_amount_micros":2782000000,
+            "price_currency_code":"LBP",
+            "title":"300 Silver (Triominos)",
+            "description":"A large pile of silver coins"
         }
     }
 }

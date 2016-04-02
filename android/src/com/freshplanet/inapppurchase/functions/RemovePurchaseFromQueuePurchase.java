@@ -34,19 +34,17 @@ public class RemovePurchaseFromQueuePurchase extends BaseFunction
 	{
 		super.call(context, args);
 		
-		String receipt = getStringFromFREObject(args[1]);
+		// String receipt = getStringFromFREObject(args[1]);
+		// Extension.log("Consuming purchase with receipt: " + receipt);
 		
-		Extension.log("Consuming purchase with receipt: " + receipt);
-		
-		String signedData = null;
-		try
-		{ 
+		String signedData = getStringFromFREObject(args[1]);
+		/* try { 
 			signedData = (new JSONObject(receipt)).getString("signedData");
 		}
 		catch (JSONException e)
 		{
 			e.printStackTrace();
-		}
+		} */
 		
 		if (signedData == null)
 		{
@@ -58,7 +56,7 @@ public class RemovePurchaseFromQueuePurchase extends BaseFunction
 		
 		try
 		{
-			Purchase p = new Purchase(IabHelper.ITEM_TYPE_INAPP , signedData, null);
+			Purchase p = new Purchase(IabHelper.ITEM_TYPE_INAPP, signedData, null);
 			Extension.context.getIabHelper().consumeAsync(p, Extension.context);
 		}
 		catch (JSONException e)
