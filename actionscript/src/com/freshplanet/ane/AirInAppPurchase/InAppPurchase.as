@@ -348,15 +348,15 @@ package com.freshplanet.ane.AirInAppPurchase
                     data.orderId,
                     data.purchaseTime);
             }
-            else if (json && json.type == InAppPurchaseReceiptType.APPLE_APP_STORE) {
+            else if (json && json.receiptType == InAppPurchaseReceiptType.APPLE_APP_STORE) {
                 receipt = new InAppPurchaseReceipt(
                     json.receiptType,
                     json.receipt,
                     json.productId,
                     null,
                     null,
-                    data.transactionId,
-                    data.transactionDate);
+                    json.transactionId,
+                    json.transactionDate);
             }
 
             if (receipt) {

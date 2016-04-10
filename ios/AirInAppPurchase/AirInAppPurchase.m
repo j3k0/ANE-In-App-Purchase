@@ -190,7 +190,7 @@ void aneDebug(NSString *msg);
         return;
     }
     NSString* receiptString = [receiptData base64EncodedStringWithOptions:0]; //[NSString stringWithUTF8String:[receiptData bytes]];
-    aneDebug(receiptString);
+    // aneDebug(receiptString);
     // NSString* receiptString = [[[NSString alloc] initWithData:receipt encoding:NSUTF8StringEncoding] autorelease];
 
     NSString* transactionId = [transaction transactionIdentifier];
@@ -261,15 +261,19 @@ void aneDebug(NSString *msg);
     {
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchased:
+                aneDebug(@"Transaction 'Purchased'");
                 [self completeTransaction:transaction];
                 break;
             case SKPaymentTransactionStateFailed:
+                aneDebug(@"Transaction 'Failed'");
                 [self failedTransaction:transaction];
                 break;
             case SKPaymentTransactionStatePurchasing:
+                aneDebug(@"Transaction 'Purchasing'");
                 [self purchasingTransaction:transaction];
                 break;
             case SKPaymentTransactionStateRestored:
+                aneDebug(@"Transaction 'Restored'");
                 [self restoreTransaction:transaction];
                 break;
             default:
