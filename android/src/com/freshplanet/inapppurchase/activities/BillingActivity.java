@@ -45,7 +45,7 @@ public class BillingActivity extends Activity implements IabHelper.OnIabPurchase
 			}
 			catch (IllegalStateException e)
 			{
-				Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "ERROR");
+				Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "IllegalStateException:" + e.getMessage());
 		    	finish();
 				return;
 			}
@@ -58,7 +58,7 @@ public class BillingActivity extends Activity implements IabHelper.OnIabPurchase
 			}
 			catch (IllegalStateException e)
 			{
-				Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "ERROR");
+				Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "IllegalStateException:" + e.getMessage());
 				finish();
 				return;
 			}
@@ -66,7 +66,7 @@ public class BillingActivity extends Activity implements IabHelper.OnIabPurchase
 		else
 		{
 			Extension.log("Unsupported billing type: " + type);
-			Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "ERROR");
+			Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "UnsupportedBillingType:" + type);
 	    	finish();
 		}
 	}
@@ -155,7 +155,7 @@ public class BillingActivity extends Activity implements IabHelper.OnIabPurchase
             catch (JSONException e)
             {
             	e.printStackTrace();
-            	Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "ERROR");
+            	Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", "JSONException:" + e.getMessage());
             }
         }
         else

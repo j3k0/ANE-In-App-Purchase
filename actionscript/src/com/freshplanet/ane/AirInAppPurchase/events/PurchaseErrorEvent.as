@@ -30,7 +30,7 @@ package com.freshplanet.ane.AirInAppPurchase.events
         /** Platform failed to perform the purchase */
         public static const PLATFORM_ERROR:int = 3;
 
-        public function codeString():String {
+        public function get codeString():String {
             switch(code) {
                 case IN_APP_PURCHASE_NOT_SUPPORTED: return "IN_APP_PURCHASE_NOT_SUPPORTED";
                 case MAKE_SUBSCRIPTION_NOT_SUPPORTED: return "MAKE_SUBSCRIPTION_NOT_SUPPORTED";
