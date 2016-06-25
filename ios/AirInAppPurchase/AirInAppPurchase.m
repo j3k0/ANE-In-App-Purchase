@@ -93,6 +93,12 @@ void aneDebug(NSString *msg);
     [self dispatchEvent:"INIT_FINISHED" withString:@"SUCCESS"];
 }
 
+- (void) restoreCompletedTransactions
+{
+    aneDebug(@"restoreCompletedTransactions");
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // PRODUCT INFO
@@ -242,7 +248,8 @@ void aneDebug(NSString *msg);
 {
     // transaction restored
     // dispatch event
-    [self dispatchEvent:"TRANSACTION_RESTORED" withString:[[transaction error] localizedDescription]];
+    // [self dispatchEvent:"TRANSACTION_RESTORED" withString:[[transaction error] localizedDescription]];
+    [self completeTransaction:transaction];
     
     // conclude the transaction
     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -388,6 +395,12 @@ DEFINE_ANE_FUNCTION(getProductsInfo)
     return nil;
 }
 
+DEFINE_ANE_FUNCTION(restoreTransactions)
+{
+    [(AirInAppPurchase*)AirInAppRefToSelf restoreCompletedTransactions];
+    return nil;
+}
+
 // remove purchase from queue.
 DEFINE_ANE_FUNCTION(removePurchaseFromQueue)
 {
@@ -443,7 +456,7 @@ void AirInAppContextInitializer(void* extData, const uint8_t* ctxType, FREContex
                              uint32_t* numFunctionsToTest, const FRENamedFunction** functionsToSet) 
 {    
     // Register the links btwn AS3 and ObjC. (dont forget to modify the nbFuntionsToLink integer if you are adding/removing functions)
-    uint32_t nbFuntionsToLink = 5;
+    uint32_t nbFuntionsToLink = 6;
     *numFunctionsToTest = nbFuntionsToLink;
     
     FRENamedFunction* func = (FRENamedFunction*) malloc(sizeof(FRENamedFunction) * nbFuntionsToLink);
@@ -467,6 +480,10 @@ void AirInAppContextInitializer(void* extData, const uint8_t* ctxType, FREContex
     func[4].name = (const uint8_t*) "removePurchaseFromQueue";
     func[4].functionData = NULL;
     func[4].function = &removePurchaseFromQueue;
+    
+    func[5].name = (const uint8_t*) "restoreTransactions";
+    func[5].functionData = NULL;
+    func[5].function = &restoreTransactions;
     
     *functionsToSet = func;
     

@@ -251,9 +251,6 @@ package com.freshplanet.ane.AirInAppPurchase
         }
         */
 
-
-        /*
-        TODO
         public function restoreTransactions():void
         {
             if (Capabilities.manufacturer.indexOf('Android') > -1)
@@ -263,10 +260,10 @@ package com.freshplanet.ane.AirInAppPurchase
             else if (Capabilities.manufacturer.indexOf("iOS") > -1)
             {
                 // TODO: This isn't how it should be implemented...
-                dispatchEvent(new RestoreInfoReceivedEvent(_pendingReceipts));
+                // dispatchEvent(new RestoreInfoReceivedEvent(_pendingReceipts));
+                extCtx.call("restoreTransactions");
             }
         }
-        */
 
         /** Stop the ANE */
         public function stop(token:InAppPurchaseToken):void
