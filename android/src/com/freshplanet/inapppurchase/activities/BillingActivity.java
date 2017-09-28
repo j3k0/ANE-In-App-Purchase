@@ -162,7 +162,11 @@ public class BillingActivity extends Activity implements IabHelper.OnIabPurchase
         {
         	Extension.log("Purchase error: " + result.getMessage());
         	Boolean isCancel = (result.getResponse() == IabHelper.IABHELPER_USER_CANCELLED);
-        	Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR", isCancel ? "RESULT_USER_CANCELED" : result.getMessage());
+            Boolean isAlreadyOwned = (result.getResponse() == IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED);
+        	Extension.context.dispatchStatusEventAsync("PURCHASE_ERROR",
+                    isCancel ? "RESULT_USER_CANCELED" :
+                    isAlreadyOwned ? "RESULT_ALREADY_OWNED" :
+                    result.getMessage());
         }
         finish();
     }
